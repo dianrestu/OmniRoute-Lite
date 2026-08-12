@@ -1,0 +1,51 @@
+# ──────────────────────────────────────────────────────────────────────────
+#  OmniRoute Lite — Docker Compose for low-RAM VPS (≤1GB)
+#
+#  No Redis, no Chromium, no sidecars. Single container.
+#
+#  Usage:
+#    docker compose -f docker-compose.lite.yml up -d
+#
+#  Build locally (needs 4GB+ RAM):
+#    docker compose -f docker-compose.lite.yml build
+#
+#  Or pull from GHCR:
+#    docker pull ghcr.io/dianrestu/omniroute-lite:latest
+# ──────────────────────────────────────────────────────────────────────────
+
+services:
+  omniroute:
+    image: ghcr.io/dianrestu/omniroute-lite:latest
+    container_name: omniroute-lite
+    restart: unless-stopped
+    ports:
+      - "${PORT:-20128}:${PORT:-20128}"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/app/data
+      - PORT=${PORT:-20128}
+      - HOSTNAME=0.0.0.0
+      # ── Low RAM settings ──
+      - OMNIROUTE_MEMORY_MB=${OMNIROUTE_MEMORY_MB:-256}
+      # Redis is OPTIONAL — when REDIS_URL is empty, OmniRoute uses
+      # in-memory rate limiting (sufficient for single-VPS usage)
+      - REDIS_URL=${REDIS_URL:-}
+      # Disable heavy features if needed
+      - ENABLE_REQUEST_LOGS=${ENABLE_REQUEST_LOGS:-false}
+      # Low-memory optimization env vars (from OmniRoute wiki)
+      # Uncomment these if you still see OOM:
+      # - OMNIROUTE_MEMORY_MB=128
+      # - PROMPT_CACHE_MAX_SIZE=20
+      # - PROMPT_CACHE_MAX_BYTES=524288
+      # - SEMANTIC_CACHE_MAX_SIZE=25
+      # - SEMANTIC_CACHE_MAX_BYTES=1048576
+      # - STREAM_HISTORY_MAX=10
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.mjs"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
