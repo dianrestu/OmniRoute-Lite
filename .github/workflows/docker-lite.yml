@@ -64,4 +64,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            OMNIROUTE_BUILD_MEMORY_MB=3072
+            OMNIROUTE_BUILD_MEMORY_MB=6144

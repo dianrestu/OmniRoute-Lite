@@ -45,8 +45,8 @@ ENV OMNIROUTE_USE_TURBOPACK=0
 ENV OMNIROUTE_BASE_PATH=""
 ENV OMNIROUTE_MITM_STUB=1
 
-# Build heap: 3GB is enough for webpack. Turbopack needs more due to native Rust.
-ARG OMNIROUTE_BUILD_MEMORY_MB=3072
+# Build heap: 6GB for webpack. GitHub Actions gives 7GB.
+ARG OMNIROUTE_BUILD_MEMORY_MB=6144
 ENV NODE_OPTIONS="--max-old-space-size=${OMNIROUTE_BUILD_MEMORY_MB}"
 
 COPY . ./
