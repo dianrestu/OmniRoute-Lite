@@ -40,15 +40,15 @@ RUN --mount=type=cache,target=/root/.npm \
       && node /usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js rebuild) \
   && node -e "require('better-sqlite3')(':memory:').close()"
 
-# Use Turbopack (default since v3.8.49) — faster, needs more RAM
-ARG OMNIROUTE_USE_TURBOPACK=1
+# Use webpack (escape hatch) — more stable for this codebase
+# Turbopack has issues with ESM modules in some files
+ARG OMNIROUTE_USE_TURBOPACK=0
 ENV OMNIROUTE_USE_TURBOPACK="${OMNIROUTE_USE_TURBOPACK}"
 ENV OMNIROUTE_BASE_PATH=""
 ENV OMNIROUTE_MITM_STUB=1
 
-# Build heap: 8GB for Turbopack. GitHub Actions gives 7GB, but we need max.
-# The builder will use all available RAM but should fit within 7GB.
-ARG OMNIROUTE_BUILD_MEMORY_MB=7168
+# Build heap: 6GB for webpack. GitHub Actions gives 7GB.
+ARG OMNIROUTE_BUILD_MEMORY_MB=6144
 ENV NODE_OPTIONS="--max-old-space-size=${OMNIROUTE_BUILD_MEMORY_MB}"
 
 COPY . ./
