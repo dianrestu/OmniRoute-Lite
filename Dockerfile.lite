@@ -81,7 +81,7 @@ COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlit
 ENV OMNIROUTE_MIGRATIONS_DIR=/app/migrations
 
 # Healthcheck
-COPY --from=builder /app/scripts/dev/healthcheck.mjs ./healthcheck.mjs
+COPY --from=builder /app/scripts/dev/healthcheck.mjs ./scripts/dev/healthcheck.mjs
 
 RUN chown -R node:node /app
 
@@ -93,6 +93,6 @@ COPY --chmod=755 scripts/check-permissions.sh /app/check-permissions.sh
 ENTRYPOINT ["/app/check-permissions.sh"]
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD ["node", "healthcheck.mjs"]
+  CMD ["node", "scripts/dev/healthcheck.mjs"]
 
 CMD ["node", "scripts/dev/run-standalone.mjs"]
